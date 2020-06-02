@@ -59,14 +59,18 @@
     }
 </script>
 <style scoped>
+    .container {
+        margin-left: -15px;
+        z-index: 6;
+        height: 50%;
+        position: absolute;
+        left: 996px;
+    }
     .tag-flag {
         width: 120px;
         height: 120px;
         background-image: url("../images/tag.svg");
-        position: absolute;
-        z-index: 6;
-        top: 43%;
-        left: 30%;
+        margin-top: calc(-25% - 80px);
     }
 
     .tag-flag > h1 {
@@ -89,14 +93,13 @@
     }
 
     .tag-card {
-        width: 80%;
-        height: 80%;
+        width: 80vw;
+        height: 80vh;
         background: #7B7C7C;
-        position: absolute;
+        position: fixed;
         padding-bottom: 20px;
-        z-index: 6;
-        top: 10%;
-        left: 10%;
+        top: 10vh;
+        left: 10vw;
     }
 
     .tag-card > h1 {

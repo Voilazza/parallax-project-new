@@ -1,5 +1,5 @@
 <template>
-    <div class="scale2">
+    <div>
         <svg
                 :width="xEnd"
                 height="50%"
@@ -56,11 +56,12 @@
         },
 
         created() {
-            console.log('created')
-            this.calculateScale()
+           this.calculateScale()
+           this.$emit('returnScaleLength', this.scaleLength)
         },
-        updated() {
-            console.log('updated');
+
+        mounted() {
+
         },
 
         methods: {

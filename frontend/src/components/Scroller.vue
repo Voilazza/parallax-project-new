@@ -20,17 +20,10 @@ export default {
 
   mounted() {
      this.$root.$on('wheelScroll', function (delta) {
-       document.getElementById('scroll-container').scrollBy({left: delta, top: 0, behavior: "smooth"})
+       document.getElementById('scroll-container').scrollBy({left: delta, top: 0, behavior: "auto"})
     })
 
    },
-
-  created() {
-     this.$emit('offsetX', this.$refs.scrollDummy.getBoundingClientRect().left)
-
-
-   },
-
 
 }
 </script>
@@ -49,6 +42,7 @@ export default {
   position: absolute;
   left:0px;
   height: 100%;
+  min-height: 1px;
 }
 
 </style>

@@ -1,11 +1,7 @@
 <template>
-    <main class="parallax-container"  @wheel.prevent="wheelScrollingOffset">
-    <tag
-            :scaleId="1235"
-            :version="1.0">
-    </tag>
-
-    <div class="parallax-layer-2 parallax-layer" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax*0.6 + 'px)'}">
+    <main class="parallax-container"  @wheel.passive="wheelScrollingOffset">
+    <TagLayer :transmittedWidth = "scaleFullWidth" :offsetParallax = "offsetParallax" :order = "1"/>
+    <div class="parallax-layer-2 parallax-layer parallax_container_level-2" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax*0.6 + 'px)'}">
       <scale
       :startDate="2010"
       :endDate="2028"
@@ -13,23 +9,15 @@
       :ratio="0.95"
     />
     </div>
-    <div class="parallax-layer-1 parallax-layer" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax + 'px)'}">
+    <div class="parallax-layer-1 parallax-layer parallax_container_level-1" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax + 'px)'}">
       <scale
+      v-on:returnScaleLength = "getScrollLength"
       :startDate="2010"
       :endDate="2028"
       :step="1"
       :ratio="1.0"
-      ref="scaleL"
     />
     </div>
-     <!-- <div class="parallax-layer-2-tag parallax-layer" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax + 'px)'}">
-       <tag
-              :version = 1
-              :scaleId = 2
-      /> 
-    </div>
-    <div class="parallax-layer-1-tag parallax-layer" :style="{width: scaleFullWidth, transform: 'translateX(' + offsetParallax + 'px)'}"></div> -->
-
 <scroller :scrollDummyWidth="scaleLength"  v-on:offsetX = "scrollParallax" />
 <editor/>
   </main>
@@ -38,7 +26,7 @@
 
 <script lang="js">
   import Scroller from '@/components/Scroller'
-  import Tag from '@/components/Tag'
+  import TagLayer from '@/components/TagLayer'
   import Scale from '@/components/Scale'
   import Editor from '@/components/Editor'
   
@@ -48,7 +36,7 @@ export default {
     components: {
     Scale,
     Scroller,
-    Tag,
+    TagLayer,
     Editor
   },
 
@@ -61,14 +49,8 @@ export default {
       }
   },
 
-    created() {
+  created() {
     //this.getData()
-  },
-
-  mounted() {
-    this.scaleLength = this.$refs.scaleL.scaleLength
-        console.log(this.scaleLength)
-
   },
 
   computed: {
@@ -78,6 +60,9 @@ export default {
   },
 
   methods: {
+    getScrollLength(length) {
+      this.scaleLength = length
+    },
 
     scrollParallax(data) {
       this.offsetParallax = data - 20;
@@ -101,20 +86,22 @@ export default {
     grid-column-start: 1;
     grid-column-end: 2;
     width: 100vw;
-    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 100%;
 }
 
 .parallax-layer {
     text-align: center;
-    height: 50%;
+    //height: 50%;
     display: flex;
     align-items: flex-end;
     overflow: hidden;
+    z-index: 2;
 }
 
-
 .parallax-layer-2 {
-  background-image: url("../img/skale.svg");
+  background-image: url("../images/skale.svg");
   background-size: cover;
 }
 
@@ -124,7 +111,7 @@ export default {
 }
 
 .parallax-layer-1 {
-  background-image: url("../img/skale2.svg");
+  background-image: url("../images/skale2.svg");
   background-size: cover;
   box-shadow: 0 -20px 20px rgba(0, 0, 0, 0.5);
 }
