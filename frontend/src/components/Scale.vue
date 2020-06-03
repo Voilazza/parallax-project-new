@@ -66,7 +66,6 @@
 
         methods: {
             calculateScale() {
-
                 this.xEnd = Math.ceil(this.wpx * 1.3) - 50;
                 this.scaleLength = Math.ceil((this.xEnd - this.x0) * this.ratio)
 

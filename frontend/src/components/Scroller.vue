@@ -20,7 +20,7 @@ export default {
 
   mounted() {
      this.$root.$on('wheelScroll', function (delta) {
-       this.scrollBy({left: delta, top: 0, behavior: "smooth"})
+         document.getElementById('scroll-container').scrollBy({left: delta, top: 0, behavior: "smooth"})
     })
 
    },
