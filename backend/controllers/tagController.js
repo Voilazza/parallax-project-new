@@ -4,8 +4,7 @@ const imageminJpegtran = require('imagemin-jpegtran');
 const imageminPngquant = require('imagemin-pngquant');
 
 exports.getTags = function getTags(req, res) {
-    Tag.findById(req.params.scaleID,(err, tags) => res.json(err || tags));
-
+    Tag.findById(req.params.scaleID, (err, tags) => res.json(err || tags));
 }
 
 exports.addTag = function addTag(req, res) {
@@ -14,11 +13,8 @@ exports.addTag = function addTag(req, res) {
 }
 
 exports.uploadFile = function uploadFile(req, res, next) {
+    let tagid = req.params.tagID;
     let imageBuffer = req.file.buffer;
-    console.log(imageBuffer);
-    // if (!filedata) {
-    //     res.send("Ошибка при загрузке файла");
-    // } else {
     const files = imagemin.buffer(imageBuffer, {
         plugins: [
             imageminJpegtran(),
@@ -26,8 +22,10 @@ exports.uploadFile = function uploadFile(req, res, next) {
                 quality: '80'
             })
         ]
-    }).then((buffer) => console.log(buffer));
+    }).then((buffer) => {
+        const update = { image: buffer };
+        Tag.findByIdAndUpdate(tagid, update, (err, tag) => console.log(tag));
+    });
 
-    // res.send("Файл загружен");
-    // }
+
 }

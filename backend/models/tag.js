@@ -5,7 +5,7 @@ const tagSchema = new Schema({
     fullText: String,
     position: Number,
     type: String,
-    imageId: Number,
+    image: Buffer,
     version: Number,
     scaleId: Number
 });
