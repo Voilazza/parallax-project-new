@@ -1,9 +1,9 @@
 <template>
   <div class="editor">
-    <div class="editor__ui-add">
+    <!--div class="editor__ui-add">
       <ui-fab
         class="ui-add__button"
-        @click="openModal('modal_add')"
+        @click="callModal('modal_add')"
         color="primary"
         icon="add"
         tooltip-position="left"
@@ -15,7 +15,7 @@
     <div class="editor__ui-set">
       <ui-fab
         class="ui-set__button"
-        @click="openModal('modal_set')"
+        @click="callModal('modal_set')"
         color="primary"
         icon="straighten"
         tooltip-position="left"
@@ -26,7 +26,7 @@
     <div class="editor__ui-share">
       <ui-fab
         class="ui-share__button"
-        @click="openModal('modal_share')"
+        @click="callModal('modal_share')"
         color="primary"
         icon="share"
         tooltip-position="left"
@@ -34,7 +34,7 @@
         :disabled="disabled_share"
         size="normal"
       ></ui-fab>
-    </div>
+    </div-->
     <div class="editor__ui-modal">
       <ui-modal ref="modal_set" size="normal" title="Настройки" transition="scale-up">
         <form v-on:submit.prevent="submitSet">
@@ -77,7 +77,7 @@
             class="ui-tab__next"
             buttonType="submit"
             color="primary"
-            @click="closeModal('modal_set')"
+            @click="callModal('modal_set')"
           >Создать</ui-button>
         </form>
       </ui-modal>
@@ -86,7 +86,7 @@
       <ui-modal ref="modal_add" size="normal" title="Новое событие" transition="scale-up">
         <form v-on:submit.prevent="submitAdd">
           <div class="ui-modal__ui-tabs">
-            <ui-tabs raised ref="controlTabs">
+            <ui-tabs raised fullwidth ref="controlTabs">
               <ui-tab title="Название" id="tab1">
                 <div class="ui-tab__content">
                   <p>Привет! Для того, чтобы прикрепить событие в мире или из вашей жизни, укажите его название...</p>
@@ -108,7 +108,7 @@
                   <ui-button
                     class="ui-tab__next"
                     buttonType="button"
-                    @click="selectNextTab('tab2')"
+                    @click="selectTab('tab2')"
                     color="primary"
                   >Далее</ui-button>
                 </div>
@@ -136,44 +136,54 @@
                   <ui-button
                     class="ui-tab__previous"
                     buttonType="button"
-                    @click="selectPrevTab('tab1')"
+                    @click="selectTab('tab1')"
                     color="primary"
                   >Назад</ui-button>
                   <ui-button
                     class="ui-tab__next"
                     buttonType="button"
-                    @click="selectNextTab('tab3')"
+                    @click="selectTab('tab3')"
                     color="primary"
                   >Далее</ui-button>
                 </div>
               </ui-tab>
               <ui-tab title="Иллюстрация" id="tab3">
                 <div class="ui-tab__content">
-                  <p>Загрузите фотографию или добавьте ссылку</p>
-                  <div class="editor__ui-textbox">
-                    <ui-textbox
-                      floating-label
-                      iicon="link"
-                      label="Url"
-                      placeholder="Ссылка на картинку"
-                      help="Добавьте ссылку на картинку вашего события"
-                      v-model="imageUrl"
-                    ></ui-textbox>
-                  </div>
-                  <p>или загрузите вашу фотографию</p>
                   <div class="editor__ui-fileupload">
-                    <ui-fileupload
-                      accept="image/*"
-                      color="primary"
-                      :raised="true"
-                      name="file"
-                      @change="onFileChange"
-                    >Выберете картинку</ui-fileupload>
-                    <div class="ui-fileupload__preview" v-if="filePreviewImage.length > 0">
+                    <div
+                      :class="['ui-fileupload__box', dragging ? 'is-dragover' : '']"
+                      v-cloak
+                      @drop.prevent="addFile"
+                      @dragover.prevent
+                      @dragenter="dragging=true"
+                      @dragleave="dragging=false"
+                      @drop="dragging=false"
+                    >
+                      <ui-fileupload
+                        accept="image/*"
+                        color="secondary"
+                        :label="fileLabel"
+                        :raised="false"
+                        name="tagImage"
+                        class="ui-fileupload__button"
+                        v-on:click="changeFile"
+                        @change="changeFile"
+                      ></ui-fileupload>
+                    </div>
+                    <ul class="ui-fileupload__files-list">
+                      <li v-bind:key="file.value" v-for="file in files">
+                        {{ file.name }} ({{ file.size | kb }} kb)
+                        <button
+                          @click="removeFile(file)"
+                          title="Удалить"
+                        >X</button>
+                      </li>
+                    </ul>
+                    <div class="ui-fileupload__preview" v-if="tagImage.length > 0">
                       <img
                         alt="filePreviewName"
                         class="ui-fileupload__preview-image"
-                        :src="filePreviewImage"
+                        :src="tagImage"
                       />
                     </div>
                   </div>
@@ -182,13 +192,13 @@
                   <ui-button
                     class="ui-tab__previous"
                     buttonType="button"
-                    @click="selectPrevTab('tab2')"
+                    @click="selectTab('tab2')"
                     color="primary"
                   >Назад</ui-button>
                   <ui-button
                     class="ui-tab__next"
                     buttonType="button"
-                    @click="selectNextTab('tab4')"
+                    @click="selectTab('tab4')"
                     color="primary"
                   >Далее</ui-button>
                 </div>
@@ -197,7 +207,7 @@
                 <div class="ui-tab__content">
                   <div class="editor__tag-preview">
                     <figure class="left">
-                      <img :src="filePreviewImage" alt="annotation" />
+                      <img :src="tagImage" alt />
                       <figcaption>{{ annotation }}</figcaption>
                     </figure>
                     <p>{{ fullText }}</p>
@@ -207,14 +217,14 @@
                   <ui-button
                     class="ui-tab__previous"
                     buttonType="button"
-                    @click="selectPrevTab('tab3')"
+                    @click="selectTab('tab3')"
                     color="primary"
                   >Назад</ui-button>
                   <ui-button
                     class="ui-tab__next"
                     buttonType="submit"
                     color="primary"
-                    @click="closeModal('modal_add')"
+                    @click="callModal('modal_add')"
                   >Создать</ui-button>
                 </div>
               </ui-tab>
@@ -223,6 +233,11 @@
         </form>
       </ui-modal>
     </div>
+    <!--div id="tagsarea">
+      <ul class="tagsarea__tags-list">
+        <li v-bind:key="tag.value" v-for="tag in tags">{{ tag.name }} {{ tag.image }}</li>
+      </ul>
+    </div-->
   </div>
 </template>
 
@@ -234,15 +249,10 @@ export default {
 
   data() {
     return {
-      disabled_add: true,
+      disabled_add: false,
       disabled_share: true,
       startScale: "",
       endScale: "",
-      annotation: "",
-      fullText: "",
-      imageUrl: "",
-      filePreviewImage: "",
-      submitted: false,
       selectScale: "",
       scaleChoise: [
         {
@@ -253,39 +263,30 @@ export default {
           label: "В жизни",
           value: "life"
         }
-      ]
+      ],
+      annotation: "",
+      fullText: "",
+      tagImage: "",
+      files: [],
+      fileLabel: "Загрузите картинку",
+      dragging: false,
+      submitted: false,
+      tags: []
     };
   },
 
   methods: {
-    openModal(ref) {
-      this.$refs[ref].open();
+    callModal(ref) {
+      let modal = this.$refs[ref];
+      if (modal.isOpen) {
+        modal.close();
+      } else {
+        modal.open();
+      }
     },
 
-    closeModal(ref) {
-      this.$refs[ref].close();
-    },
-
-    selectPrevTab(tab_id) {
+    selectTab(tab_id) {
       this.$refs.controlTabs.setActiveTab(tab_id);
-    },
-
-    selectNextTab(tab_id) {
-      this.$refs.controlTabs.setActiveTab(tab_id);
-    },
-
-    onFileChange(files) {
-      this.filePreviewImage = URL.createObjectURL(files[0]);
-    },
-
-    submitSet() {
-      this.disabled_add = false;
-      console.log(this.$data);
-    },
-
-    submitAdd() {
-      this.submitted = true;
-      console.log(this.$data);
     },
 
     onQueryChange(query) {
@@ -293,6 +294,51 @@ export default {
         return;
       }
       this.fetchRemoteResults(query);
+    },
+
+    addFile(e) {
+      if (!e.dataTransfer.files) {
+        return;
+      } else if (e.dataTransfer.files.length > 1) {
+        alert("1 photo please");
+      } else {
+        let files = e.dataTransfer.files;
+        this.changeFile(files);
+      }
+    },
+
+    changeFile(files) {
+      [...files].forEach(f => {
+        this.files.pop(files[0]);
+        this.files.push(f);
+        this.tagImage = URL.createObjectURL(files[0]);
+        this.fileLabel = files[0].name;
+      });
+    },
+
+    removeFile(file) {
+      this.files = this.files.filter(f => {
+        return f != file;
+      });
+      this.tagImage = "";
+      this.fileLabel = "Загрузите картинку";
+    },
+
+    submitSet() {
+      this.disabled_add = false;
+    },
+
+    submitAdd() {
+      let tags = [
+        {
+          name: "В мире",
+          image: "world"
+        }
+      ];
+      this.submitted = true;
+      [...tags].forEach(f => {
+        this.tags.push(f);
+      });
     }
   }
 };
@@ -383,13 +429,52 @@ export default {
   .ui-textbox {
     max-width: rem(600px);
   }
+  .is-disabled {
+    display: none;
+  }
 }
 
 .editor__ui-fileupload {
+  .ui-fileupload__box {
+    height: 100px;
+    background-color: #c8dadf;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    z-index: 1;
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    -webkit-transition: outline-offset 0.15s linear,
+      background-color 0.15s linear;
+    transition: outline-offset 0.15s linear, background-color 0.15s linear;
+    &:hover {
+      opacity: 0.9;
+      -webkit-transition: opacity 0.15s linear;
+      transition: opacity 0.15s linear;
+    }
+  }
+  .ui-fileupload__box.is-dragover {
+    outline-offset: -2px;
+    outline-color: #c8dadf;
+    background-color: #fff;
+  }
+  .ui-fileupload__button {
+    display: contents;
+  }
+  .ui-fileupload__content {
+    z-index: -1;
+    text-transform: none;
+  }
+  .ui-fileupload__files-list {
+    padding: 0;
+  }
+  .ui-fileupload__files-list li {
+    list-style: none;
+  }
   .ui-fileupload__preview {
     display: table;
     border: 1px solid #ddd;
-    margin-top: 8px;
+    margin: 0 auto;
     padding: 4px;
     line-height: 1;
   }
