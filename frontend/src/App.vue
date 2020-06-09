@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" @wheel="scrollHandler" @keydown.left="keyHandler" @keydown.right="keyHandler" tabindex="0" v-focus>
         <div class="main-container">
             <header>
                 <h1>
@@ -14,10 +14,38 @@
 
 
 <script lang="js">
-export default {
-  name: "App",
-
-}
+    export default {
+        name: "App",
+        data() {
+            return {
+                scrollDelta: 20
+            };
+        },
+        methods: {
+            scrollHandler(event) {
+                event.preventDefault();
+                this.scroll(-event.wheelDeltaX / 3);
+            },
+            keyHandler(event) {
+                if (event.repeat) {
+                    this.scrollDelta += 5;
+                } else {
+                    this.scrollDelta = 20;
+                }
+                this.scroll(event.key === "ArrowRight" ? this.scrollDelta : -this.scrollDelta);
+            },
+            scroll(delta) {
+                document.getElementById('scroll-container').scrollBy({left: delta, top: 0, behavior: "auto"});
+            }
+        },
+        directives: {
+            focus: {
+                inserted(el) {
+                    el.focus()
+                }
+            }
+        }
+    }
 </script>
 
 <style lang="scss">
