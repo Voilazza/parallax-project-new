@@ -9,11 +9,9 @@ node_modules
 .idea
 vcs.xml
 workspace.xml
-<<<<<<< HEAD
 backend/public
-=======
 .vscode
->>>>>>> develop
+package-lock.json
 
 # Docker
 Dockerfile

@@ -327,6 +327,7 @@ definitions:
           - week
           - hour
           - second
+          - century
         default: year
       endDate:
         type: string

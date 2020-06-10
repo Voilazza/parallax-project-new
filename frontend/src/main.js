@@ -8,6 +8,11 @@ import 'keen-ui/dist/keen-ui.css'
 Vue.use(KeenUI);
 
 Vue.config.productionTip = false
+Vue.config.devtools = false
+
+Vue.filter('kb', val => {
+  return Math.floor(val / 1024)
+})
 
 new Vue({
   router,

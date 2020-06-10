@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax</title>
+</head>
+
+<body>
+<header><h1>
+    Удивительная история моих приключений
+</h1></header>
+<div class="layer1">Верхний слой</div>
+<div class="layer2">Нижний слой</div>
+<div class="layer-tags">Tag</div>
+</body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    header {
+        position: fixed;
+        top:0px;
+        left: 0px;
+        height: 40%;
+        width: 100%;
+        background-color: antiquewhite;
+    }
+
+    .layer1 {
+        position: fixed;
+        top:40%;
+        left: 0px;
+        height: 30%;
+        width: 100%;
+        background-color: azure;
+        outline: 1px dotted grey;
+    }
+
+    .layer2 {
+        position: absolute;
+        top:70%;
+        left: 0px;
+        height: 30%;
+        width: 150vw;
+        background-color: aquamarine;
+        outline: 1px dotted green;
+    }
+    .layer-tags {
+        position: fixed;
+        top:40%;
+        left: 0px;
+        height: 30%;
+        width: 100%;
+    }
+
+</style>
+<script>
+    let bar = document.querySelector('body')
+    bar.addEventListener("wheel", () => {
+        console.log('dfdf')
+    })
+</script>
+</html>

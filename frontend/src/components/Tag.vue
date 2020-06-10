@@ -71,6 +71,7 @@
         height: 120px;
         background-image: url("../images/tag.svg");
         margin-top: calc(-25% - 80px);
+        transform: scale(0.8,0.8);
     }
 
     .tag-flag > h1 {
